@@ -1,0 +1,51 @@
+body
+{
+	background-color: black;
+	color: gray;
+	
+	transition-property: opacity;
+	transition-duration: 0s; /* par défaut au lancement de la page */
+	transition-timing-function: ease-in-out;
+}
+.bodyInvisible
+{
+	opacity: 0;	
+}
+.bodyTransitionDurationOK /* classe ajoutée en JS */
+{
+	transition-duration: 0.3s; 
+}
+/*
+Au lancement du site :
+- transition-duration est à 0 
+- .bodyInvisible est appliqué à <body>. 
+
+Pourquoi ?
+- Cela évite que la transition vers .bodyInvisible se déclenche.
+*/
+
+
+/* Styles globaux à récupérer par les Web Components */
+.boutonPourri
+{
+	color:white;
+	background-color: darkgreen;
+}
+.boutonPourri:hover
+{
+	background-color: green;
+}
+
+/* Test avec ::part() */
+page-accueil::part(youpi)
+{
+	color:white;
+	background-color: darkred;
+	border: 0;
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+}
+page-accueil::part(youpi):hover
+{
+	background-color: red;
+}

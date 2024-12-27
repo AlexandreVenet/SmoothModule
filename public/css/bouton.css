@@ -1,0 +1,13 @@
+.boutonRubrique
+{
+	background-color: yellow;
+	box-sizing: border-box;
+	border: none;
+	margin: 0; 
+	padding: 0.5rem;
+	border-radius: 0.25rem;
+}
+.boutonRubrique:hover
+{
+	background-color: rgb(215, 215, 0);
+}

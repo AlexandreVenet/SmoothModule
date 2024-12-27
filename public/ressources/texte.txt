@@ -1,0 +1,1 @@
+Le dossier contenant ce fichier regroupe des fichiers qui peuvent être lus dans le navigateur.

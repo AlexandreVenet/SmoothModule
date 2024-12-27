@@ -1,0 +1,13 @@
+{
+  "name": "smoothmodule",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Programme de test *client side* avec un serveur Node.js minimal.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"start": "node serveur/index.js"
+  },
+  "author": "Alexandre VENET",
+  "license": "UNLICENSED"
+}
