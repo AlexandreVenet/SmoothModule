@@ -21,14 +21,14 @@ Node est requis pour gérer le serveur. J'ai choisi cette technologie pour sa si
 Démarrer le serveur en exécutant une de ces instructions dans un terminal : 
 
 ```
-node private/index.js
+node serveur/index.js
 ```
 
 ```
 npm start
 ```
 
-Le dossier `public` et ses contenus doivent être les seules ressources exposées côté client.
+Le dossier `www` et ses contenus doivent être les seules ressources exposées côté client.
 
 La ***Content Security Policy*** empêche les styles et scripts dits *inline*. Ceci vaut également pour les Web Components. Plusieurs solutions existent de complexité variable :
 - utiliser des ressources externes, chargées par les composants (solution retenue car simple),
@@ -37,7 +37,7 @@ La ***Content Security Policy*** empêche les styles et scripts dits *inline*. C
 
 D'un point de vue de l'expérience utilisateur, les adresses ciblant un fichier (JS, CSS...), ne doivent pas être accédées directement par l'utilisateur. Pour cela, le serveur peut analyser le `referer` : si sa valeur est celle attendue, alors le serveur renvoie la ressource ; sinon, le serveur redirige vers une page ou retourne une erreur. Certes, le `referer` peut être modifié, mais c'est dans une optique d'UX et non pas de sécurité que cette fonctionnalité est mise en place.
 
-Voyons plus précisément le cas des fichiers à télécharger. Ce cas est considéré spécifiquement du côté du serveur : si un fichier se trouve dans un certain dossier dédié aux téléchargements (par exemple `public/telechargements`), alors le serveur renvoie la ressource avec les en-têtes nécessaires au navigateur pour que le fichier soit effectivement téléchargé (et non pas simplement lu comme une page HTML par exemple). Il est un cas spécial, les fichiers PDF : le navigateur peut afficher le fichier en plus d'effectuer le téléchargement ; alors, pour le confort d'utilisation, il est préférable de laisser le navigateur afficher le contenu et pour cela il faut placer le fichier dans un autre répertoire (par exemple, `public/ressources`).
+Voyons plus précisément le cas des fichiers à télécharger. Ce cas est considéré spécifiquement du côté du serveur : si un fichier se trouve dans un certain dossier dédié aux téléchargements (par exemple `www/telechargements`), alors le serveur renvoie la ressource avec les en-têtes nécessaires au navigateur pour que le fichier soit effectivement téléchargé (et non pas simplement lu comme une page HTML par exemple). Il est un cas spécial, les fichiers PDF : le navigateur peut afficher le fichier en plus d'effectuer le téléchargement ; alors, pour le confort d'utilisation, il est préférable de laisser le navigateur afficher le contenu et pour cela il faut placer le fichier dans un autre répertoire (par exemple, `www/ressources`).
 
 Les fichiers sont à renvoyer côté client avec un type MIME adéquat.
 
