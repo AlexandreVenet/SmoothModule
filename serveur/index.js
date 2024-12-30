@@ -1,11 +1,28 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const url = require("url");
+const url = require('url');
+const process = require('process');
 
-const SERVEUR = 'http://localhost';
-const PORT = 3000;
-const DOSSIER_PUBLIC = path.join(__dirname, '../public');
+const env = require('./env');
+env.chargerENVLocal();
+
+// L'hébergeur peut utiliser process.env pour stocker des infos du serveur.
+const SERVEUR = process.env.HOST || process.env.LOCAL_HOST;
+const PORT = process.env.PORT || process.env.LOCAL_PORT;
+
+// Le referer dépend du serveur.
+let refereur; 
+if(SERVEUR === process.env.LOCAL_HOST)
+{
+	refereur = SERVEUR;
+}
+else
+{
+	refereur = process.env.DISTANT_HOST;
+}
+
+const DOSSIER_PUBLIC = path.join(__dirname, '../www');
 const TYPES_MIME = 
 {
 	'.txt': 'text/plain',
@@ -60,7 +77,8 @@ const server = http.createServer((req, res) =>
 	${referer}`);
 	if(referer)
 	{
-		console.log(`\tReferer inclut le nom du serveur et le port : ${referer.includes(SERVEUR + ':' + PORT + '/')}`);
+		// console.log(`\tReferer : ${referer.includes(SERVEUR + ':' + PORT + '/')}`); // peut ne pas inclure le PORT
+		console.log(`\tReferer : ${referer.includes(refereur)}`);
 	}
 	
 	// Récupérer l'origin, si existant
@@ -78,7 +96,8 @@ const server = http.createServer((req, res) =>
 	if (req.url.match(/\.(html?|js|css|png|jpe?g|gif|svg|ico|eot|woff2?|otf|ttf|ttc|txt|pdf|zip)$/)) 
 	{		
 		// Si on demande une URL de fichier depuis la barre d'adresse du navigateur, alors c'est qu'on n'envoie pas de referer.
-		if(!referer || !referer.startsWith(`${SERVEUR}:${PORT}/`))
+		// if(!referer || !referer.startsWith(`${SERVEUR}:${PORT}/`)) // peut ne pas inclure le PORT
+		if(!referer || !referer.startsWith(refereur))
 		{
 			// Message html - erreur 403
 			// res.writeHead(403, { 'Content-Type': 'text/html' });
@@ -116,7 +135,7 @@ const server = http.createServer((req, res) =>
 	{
 		// v.1 : avec gestion 404 sur page dédiée
 		// cheminDemande = path.join(DOSSIER_PUBLIC, req.url);
-		// v.2 : avec renvoi systématique vers l'accueil (le front gère les erreurs ?)
+		// v.2 : avec renvoi systématique vers l'accueil (le front gère les erreurs)
 		cheminDemande = path.join(__dirname, 'html/index.html');
 	}
 	

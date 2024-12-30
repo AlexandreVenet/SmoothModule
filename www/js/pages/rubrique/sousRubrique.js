@@ -27,15 +27,15 @@ class SousRubrique extends HTMLElement
 		// Sécurité : le gestionnaire onload="" inséré en attribut HTML est bloqué grâce à la CSP.
 		const template = document.createElement('template');
 		template.innerHTML = `
-		<link rel="stylesheet" href="css/bouton.css">
+		<link rel="stylesheet" href="/css/bouton.css">
 		<h1>Sous-rubrique</h1>
 		<button id="boutonRetour" class="boutonRubrique" onload="alert('toto');">Revenir à l'accueil</button>
 		<div>
 			<h2>Image introuvable</h2>
-			<img src="img/imageXX.png" alt="Youpi !" width="320" height="240">
+			<img src="/img/imageXX.png" alt="Youpi !" width="320" height="240">
 			<br>
 			<h2>Image trouvée</h2>
-			<img src="img/image.png" alt="Image existante" width="320" height="240">
+			<img src="/img/image.png" alt="Image existante" width="320" height="240">
 		</div>
 			
 		<div>
@@ -51,15 +51,15 @@ class SousRubrique extends HTMLElement
 			<h2>Téléchargements</h2> 
 			<p>Télécharger dans une nouvelle fenêtre pour afficher une erreur, ce n'est pas conseillé. Utiliser l'attribut <code>download</code> pour indiquer au navigateur qu'on souhaite télécharger et non pas consulter. Le serveur est codé de façon à forcer le téléchargement de ce qui se trouve dans le répertoire de téléchargements. L'attribut semble donc inutile... eh bien non, utile, car sans cet attribut, l'erreur de fichier introuvable s'affiche dans le navigateur (enfin, ne pas trouver le fichier devrait être une situation corrigée, n'est-ce pas...). Bon, ensuite, cet attribut ne fonctionne pas avec des ressources cross-origin, donc il est difficile de l'utiliser de façon générique... Finalement, il vaut mieux  contourner avec du JS, alors cet attribut sert simplement à cibler ces liens servant à télécharger des fichiers (on peut également cibler ces liens grâce à l'attribut pour leur appliquer un style).</p>
 			<ul>
-				<li><a href="telechargement/texteXX.txt" title="Télécharger le fichier" download>TXT introuvable</a></li>
-				<li><a href="telechargement/texte.txt" title="Télécharger le fichier" download>TXT</a></li>
-				<li><a href="telechargement/exemple.pdf" title="Télécharger le fichier" download>PDF</a></li>
+				<li><a href="/telechargement/texteXX.txt" title="Télécharger le fichier" download>TXT introuvable</a></li>
+				<li><a href="/telechargement/texte.txt" title="Télécharger le fichier" download>TXT</a></li>
+				<li><a href="/telechargement/exemple.pdf" title="Télécharger le fichier" download>PDF</a></li>
 			</ul>
 			<h2>Ressources</h2>
 			<p>Ressources à lire dans le navigateur, dans un nouvel onglet</p>
 			<ul>
-				<li><a href="ressources/texte.txt" target="_blank" title="Consulter le fichier">TXT</a></li>
-				<li><a href="ressources/exemple.pdf" target="_blank" title="Consulter le fichier">PDF</a></li>
+				<li><a href="/ressources/texte.txt" target="_blank" title="Consulter le fichier">TXT</a></li>
+				<li><a href="/ressources/exemple.pdf" target="_blank" title="Consulter le fichier">PDF</a></li>
 			</ul>
 		</div>
 		<script>

@@ -47,7 +47,7 @@ Toutes les requêtes qui ne pointent pas sur un fichier doivent retourner le fic
 
 ## HTML et CSS
 
-Pour résoudre les chemins vers les ressources, la page d'accueil HTML présente le *tag* `<base>`.
+Pour résoudre les chemins vers les ressources, la page d'accueil HTML peut présenter le *tag* `<base>`. Sinon, les liens relatifs doivent commencer par `/`.
 
 La feuille de style globale du site est chargée en `<head>` avec un *tag* `<link>`. Ce *tag* présente un attribut *dataset* `id` pour cibler cette feuille de style. *Dataset* et non pas un attribut `id` : ceci pour éviter tout conflit ultérieur avec le contenu des pages.
 
