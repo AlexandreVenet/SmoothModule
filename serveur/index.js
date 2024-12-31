@@ -4,10 +4,13 @@ const path = require('path');
 const url = require('url');
 const process = require('process');
 
+// Ajouter mes variagles d'environnement à celles éventuellement déjà déclarées.
+// En effet, l'hébergeur peut utiliser process.env pour stocker des infos du serveur.
 const env = require('./env');
 env.chargerENVLocal();
 
-// L'hébergeur peut utiliser process.env pour stocker des infos du serveur.
+// Déclarer le serveur et le port selon les éventuelles variables d'environnement du serveur.
+// Si rien, alors le serveur est local.
 const SERVEUR = process.env.HOST || process.env.LOCAL_HOST;
 const PORT = process.env.PORT || process.env.LOCAL_PORT;
 
