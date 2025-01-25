@@ -71,7 +71,7 @@ class Main
 			// Créer une promesse qui sera rejetée après le délai spécifié
 			const timeout = new Promise((_, reject) => 
 			{
-				setTimeout(() => reject(new Error("Timeout dépassé")), 3000);
+				setTimeout(() => reject(new Error("Timeout dépassé")), 30000);
 			});
 			// Lancer en parallèles l'importation du module et le timeout 
 			const module = await Promise.race([
