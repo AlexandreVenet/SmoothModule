@@ -414,7 +414,7 @@ La page d'erreur est particulière : son constructeur ne fait qu'appeler le cons
 
 Pourquoi cette différence ? C'est le moyen le plus simple pour passer au composant de la page d'erreur **la route qui a levé une erreur**. 
 
-## Constantes UTILS
+## Constantes MODS
 
 Sur le même modèle que `PAGES`, le fichier des constantes contient une entrée `MODS` référençant des modules utilitaires qui sont destinés à être ajoutés au *shadow DOM* des modules de page. Ces modules doivent tous avoir un `export default` et hériter de `HTMLElement`.
 
