@@ -1,0 +1,10 @@
+.truc
+{
+	background-color: rgb(255,255,255, 0.5);
+	position: fixed;
+	transform: rotate(45deg);
+	padding: 2rem 10rem;
+	top:-1rem;
+	right:-9rem;
+	font-size: 2rem;
+}

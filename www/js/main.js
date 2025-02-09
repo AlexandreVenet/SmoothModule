@@ -14,6 +14,8 @@ class Main
 		this.cheminFichiersPages = '/js/pages';
 		this.cheminConstantes = '/js/constantes.js';
 		
+		this.cheminFichiersUtilitaires = '/js/utilitaires';
+		
 		this.tracer('Instance générée');
 	}
 	
@@ -90,6 +92,23 @@ class Main
 	{
 		const module = await this.importerJS(this.cheminConstantes);
 		return module;
+	}
+	
+	chargerUtilitaire = async (reference) =>
+	{
+		const module = await main.importerJS(main.cheminFichiersUtilitaires + reference.chemin);
+		
+		if(!module) 
+		{
+			this.tracer(`%cchargerUtilitaire() : Echec du chargement d'utilitaire : `, 'color:DarkGreen', reference.chemin);
+			return;
+		}
+		
+		const moduleExistant = customElements.get(reference.nom);
+		if(!moduleExistant)
+		{
+			customElements.define(reference.nom, module.default);
+		}
 	}
 	
 	chargerPage3 = async (page, routeDemandee) =>
@@ -332,6 +351,11 @@ let procedure = async () =>
 		return;
 	}
 	window.PAGES = constantes.PAGES; // objet global aussi
+	window.MODS = constantes.MODS; // idem
+	
+	// Chargeons ce module utilitaire très important.
+	await main.chargerUtilitaire(MODS.truc);
+	// Il n'est pas utilisé tout de suite... Suspense !
 	
 	main.ecouterHistorique();
 	

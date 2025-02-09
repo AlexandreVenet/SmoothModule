@@ -139,9 +139,13 @@ class Rubrique extends HTMLElement
 		// Noter qu'on peut faire la même chose avec le document HTML lui-même, en particulier si on n'utilise pas de shadowDOM :
 		// document.adoptedStyleSheets = [...document.adoptedStyleSheets, newSheet];
 		
+		// Et on veut un truc !
+		const truc = document.createElement(MODS.truc.nom);
+		
 		// Ajouter les éléments au Shadow DOM
 		shadow.appendChild(h1);
-		shadow.appendChild(bouton);		
+		shadow.appendChild(bouton);
+		shadow.appendChild(truc);
 	}
 	
 	connectedCallback()

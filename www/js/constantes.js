@@ -41,3 +41,12 @@ export const PAGES =
 		route: '/analyse-url',
 	},
 };
+
+export const MODS = 
+{
+	truc:
+	{
+		nom: 'mod-truc',
+		chemin: '/truc.js',
+	},
+};

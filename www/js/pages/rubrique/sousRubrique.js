@@ -62,10 +62,13 @@ class SousRubrique extends HTMLElement
 				<li><a href="/ressources/exemple.pdf" target="_blank" title="Consulter le fichier">PDF</a></li>
 			</ul>
 		</div>
+		
 		<script>
 			console.log('Le script dans un template ne s\'exécute pas.');
 			alert('toto');
 		</script>
+		
+		<mod-truc></mod-truc>
 		`;
 		shadow.appendChild(template.content.cloneNode(true));
 		

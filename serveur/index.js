@@ -4,7 +4,7 @@ const path = require('path');
 const url = require('url');
 const process = require('process');
 
-// Ajouter mes variagles d'environnement à celles éventuellement déjà déclarées.
+// Ajouter mes variables d'environnement à celles éventuellement déjà déclarées.
 // En effet, l'hébergeur peut utiliser process.env pour stocker des infos du serveur.
 const env = require('./env');
 env.chargerENVLocal();
