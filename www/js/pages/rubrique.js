@@ -23,6 +23,7 @@ class Rubrique extends HTMLElement
 		h1.textContent = 'Rubrique';
 		
 		const bouton = document.createElement('button');
+		bouton.type = 'button';
 		bouton.textContent = 'Revenir à l\'accueil';
 		// Par défaut, Web Component ne peut pas utiliser le CSS global.
 		// On peut utiliser ::part() (voir accueil.js).

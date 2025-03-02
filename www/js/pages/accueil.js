@@ -25,6 +25,7 @@ class Accueil extends HTMLElement
 		h1.textContent = 'Accueil';
 		
 		const bouton = document.createElement('button');
+		bouton.type = 'button';
 		bouton.textContent = 'Rubrique';
 		bouton.classList.add('boutonRubrique');
 		bouton.onclick = (e) =>
@@ -35,6 +36,7 @@ class Accueil extends HTMLElement
 		}
 		
 		const boutonSousPage = document.createElement('button');
+		boutonSousPage.type = 'button';
 		boutonSousPage.textContent = 'Lancer la sous-rubrique';
 		// Par défaut, Web Component ne peut pas utiliser le CSS global.
 		// Contournement possible avec '::part()' en CSS et cette instruction :
@@ -46,6 +48,7 @@ class Accueil extends HTMLElement
 		}
 		
 		const boutonAlerte = document.createElement('button');
+		boutonAlerte.type = 'button';
 		boutonAlerte.textContent = 'Lancer la page avec alerte';
 		boutonAlerte.onclick = (e) =>
 		{
@@ -54,6 +57,7 @@ class Accueil extends HTMLElement
 		}
 		
 		const boutonAnalyseUrl = document.createElement('button');
+		boutonAnalyseUrl.type = 'button';
 		boutonAnalyseUrl.textContent = 'Analyse URL';
 		boutonAnalyseUrl.onclick = (e) =>
 		{

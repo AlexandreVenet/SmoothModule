@@ -29,7 +29,7 @@ class SousRubrique extends HTMLElement
 		template.innerHTML = `
 		<link rel="stylesheet" href="/css/bouton.css">
 		<h1>Sous-rubrique</h1>
-		<button id="boutonRetour" class="boutonRubrique" onload="alert('toto');">Revenir à l'accueil</button>
+		<button type="button" id="boutonRetour" class="boutonRubrique" onload="alert('toto');">Revenir à l'accueil</button>
 		<div>
 			<h2>Image introuvable</h2>
 			<img src="/img/imageXX.png" alt="Youpi !" width="320" height="240">

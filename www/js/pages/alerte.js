@@ -38,6 +38,7 @@ class Alerte extends HTMLElement
 		pInfo.id = 'pInfo';
 		
 		const bouton = document.createElement('button');
+		bouton.type = 'button';
 		bouton.textContent = 'Revenir à l\'accueil';
 		bouton.onclick = (e) =>
 		{

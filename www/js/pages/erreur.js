@@ -38,6 +38,7 @@ class Erreur extends HTMLElement
 		}
 		
 		const bouton = document.createElement('button');
+		bouton.type = 'button';
 		bouton.textContent = 'Accueil';
 		bouton.onclick = (e) =>
 		{
