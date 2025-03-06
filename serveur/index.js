@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const process = require('process');
+const zlib = require('zlib');
 
 // Ajouter mes variables d'environnement à celles éventuellement déjà déclarées.
 // En effet, l'hébergeur peut utiliser process.env pour stocker des infos du serveur.
@@ -54,6 +55,7 @@ const TYPES_MIME =
 };
 
 
+
 const server = http.createServer((req, res) => 
 {	
 	tracerInformations(req);
@@ -89,6 +91,9 @@ const server = http.createServer((req, res) =>
 	// console.log(`Origin :
 	// ${origin}`);
 	// Même logique que referer.
+	
+	// Récupérer la liste des encodages supportés
+	const acceptEncoding = req.headers['accept-encoding'] || '';
 		
 	// Si le fichier demandé à est télécharger ou non. Par défaut, non.
 	let fichierEstATelecharger = false;
@@ -172,8 +177,8 @@ const server = http.createServer((req, res) =>
 			res.setHeader('Content-Disposition', `attachment; filename="${nomFichierATelecharger}"`);
 			res.setHeader('Content-length', content.size);
 			// Créer un flux de lecture pour le fichier et le transmettre au client
-            const fileStream = fs.createReadStream(cheminDemande);
-            fileStream.pipe(res);
+			const fileStream = fs.createReadStream(cheminDemande);
+			fileStream.pipe(res);
 		});
 		return;
 	}
@@ -201,7 +206,7 @@ const server = http.createServer((req, res) =>
 		}
 		
 		// Envoie le contenu du fichier avec le type MIME correct
-		retournerRessource(res, 200, contentType, content);		
+		retournerRessource(res, 200, contentType, content);
 	});
 });
 
@@ -225,7 +230,8 @@ let tracerInformations = (req) =>
 	URL : ${req.url}
 	Adresse IP : ${req.socket.remoteAddress}
 	Adresse IP si Proxy : ${req.headers['x-forwarded-for']}
-	User agent: ${req.headers['user-agent']}`); 
+	User agent: ${req.headers['user-agent']}
+	acceptEncoding = ${req.headers['accept-encoding']}`); 
 	// socket = connexion TCP, remoteAddress = adresse IP de l'utilisateur ayant fait la requête
 	// Adresse IPv4, par exemple 192.168.0.1
 	// Adresse IPv6, par exemple ::1 (localhost en IPv6).
@@ -260,7 +266,7 @@ let retournerRessource = (res, statusCode, typeMime, message) =>
 			charset = '; charset=utf-8';
 			break;
 	}
-	res.setHeader('Content-Type', `${typeMime}${charset}`);
+	res.setHeader('Content-Type', `${typeMime}${charset}`);	
 	res.end(message);
 }
 
