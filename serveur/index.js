@@ -27,6 +27,7 @@ else
 }
 
 const DOSSIER_PUBLIC = path.join(__dirname, '../www');
+
 const TYPES_MIME = 
 {
 	'.txt': 'text/plain',
@@ -54,6 +55,16 @@ const TYPES_MIME =
 	'.zip': 'application/zip',
 };
 
+const CONTENTTYPE_CHARSET = '; charset=utf-8';
+
+const ENCODINGS = [
+	{ nom: 'br', methodeRessource: zlib.brotliCompress, methodeTelechargement: zlib.createBrotliCompress },
+	{ nom: 'gzip', methodeRessource: zlib.gzip, methodeTelechargement: zlib.createGzip },
+	{ nom: 'deflate', methodeRessource: zlib.deflate, methodeTelechargement: zlib.createDeflate }
+];
+
+const fichiersNonCompressibles = ['.zip', '.rar', '.mp3', '.mp4', '.jpg', '.png', '.pdf', '.ico'];
+
 
 
 const server = http.createServer((req, res) => 
@@ -78,7 +89,7 @@ const server = http.createServer((req, res) =>
 	
 	// Récupérer le referer, si existant
 	const referer = req.headers['referer'];
-	console.log(`Referer : 
+	console.log(`Referer
 	${referer}`);
 	if(referer)
 	{
@@ -147,73 +158,141 @@ const server = http.createServer((req, res) =>
 		cheminDemande = path.join(__dirname, 'html/index.html');
 	}
 	
-	// Déterminer le type MIME pour l'en-tête Content-Type
+	// L'extension de fichier
 	const extension = String(path.extname(cheminDemande)).toLowerCase();
-	const contentType = TYPES_MIME[extension] || 'application/octet-stream';
 	
-	console.log(`Ressource à trouver et à renvoyer :
+	// Déterminer le type MIME et le charset pour l'en-tête Content-Type
+	const typeMime = TYPES_MIME[extension] || 'application/octet-stream';
+	const contentTypeCharset = retournerContentType(typeMime);
+	
+	// La ressource est-elle à compresser ? Si oui, alors récupérer nom et méthodes.
+	let fichierEstACompresser = false;
+	let compressionChoisie;
+	if(!fichiersNonCompressibles.includes(extension))
+	{
+		fichierEstACompresser = true;
+		for(let el of ENCODINGS)
+		{
+			if(acceptEncoding.includes(el.nom))
+			{
+				compressionChoisie = el;
+				break;
+			}
+		}
+	}
+	
+	console.log(`Ressource à trouver et à renvoyer
 	Chemin demandé : ${cheminDemande}
-	ContentType : ${contentType}`);
+	typeMime : ${typeMime}
+	ContentType : ${contentTypeCharset}
+	Compresser ? ${fichierEstACompresser} ${compressionChoisie?compressionChoisie.nom:''}
+	Télécharger ? ${fichierEstATelecharger}`);
 	
 	// Servir le fichier
 	
 	if(fichierEstATelecharger)
 	{
-		console.log('Le fichier est à télécharger.');
 		fs.stat(cheminDemande, (error, content) =>
 		{
+			console.log(`\nTéléchargement de ${cheminDemande} sans compression.`);
 			if(error)
 			{
 				console.log(`Erreur : fichier introuvable à l'adresse ${cheminDemande}`);
 				// renvoyerPageErreur(res, `${obtenirProtocole(req)}//${req.headers.host}${req.url}`);
 				// Non car renvoie la page d'erreur en téléchargement si fichier introuvable 😄
 				// v.2
-				retournerRessource(res, 404, TYPES_MIME['.txt'], 'Fichier introuvable');
+				// retournerRessourcePersonnalisee(res, 404, TYPES_MIME['.txt'], 'Fichier introuvable');
+				retournerMessage(res, 404, 'Fichier introuvable');
 				return;
 			}
 			// Définir les en-têtes
 			res.statusCode = 200;
-			res.setHeader('Content-Type', contentType);
+			res.setHeader('Content-Type', contentTypeCharset);
 			res.setHeader('Content-Disposition', `attachment; filename="${nomFichierATelecharger}"`);
 			res.setHeader('Content-length', content.size);
+			// V.1
 			// Créer un flux de lecture pour le fichier et le transmettre au client
 			const fileStream = fs.createReadStream(cheminDemande);
 			fileStream.pipe(res);
+			// V.2 
+			// Créer un flux de lecture du fichier, selon la compression à appliquer, et le transmettre au client
+			/*const fileStream = fs.createReadStream(cheminDemande);
+			let compressionStream = null;
+			if(fichierEstACompresser)
+			{
+				console.log(`\nFichier ${cheminDemande} à compresser avant téléchargement avec ${compressionChoisie.nom}.`);
+
+				res.setHeader("Content-Encoding", compressionChoisie.nom);
+				compressionStream = compressionChoisie.methodeTelechargement();
+			}
+			
+			if(compressionStream)
+			{
+				fileStream.pipe(compressionStream).pipe(res);
+			}
+			else
+			{
+				fileStream.pipe(res);
+			}*/
+			// Problèmes : temps de traitement plus long ; les fichiers média ne sont pas à compresser car ils le sont déjà ; donc rester en V.1.
 		});
 		return;
 	}
 	
 	// Si le fichier n'est pas à télécharger, alors le lire et envoyer le contenu comme réponse
-	console.log('Le fichier n\'est pas à télécharger.');
 	fs.readFile(cheminDemande, (error, content) => 
 	{
 		if (error)
 		{
 			if (error.code === 'ENOENT') // fichier non trouvé
 			{
-				console.log(`Erreur : fichier introuvable à l'adresse ${cheminDemande}`);
-				retournerRessource(res, 404, TYPES_MIME['.txt'], '404 - Ressource introuvable');
+				console.log(`\nEnvoi de ${cheminDemande}. Erreur : fichier introuvable`);
+				retournerMessage(res, 404, '404 - Ressource introuvable');
 			}
-			else
+			else // Tout autre cas d'erreur
 			{
-				// Tout autre cas d'erreur
-				retournerRessource(res, 500, TYPES_MIME['.txt'], `500 - ${error.code}`);
-				console.log(`Erreur 500 Internal Server Error
-	Message : ${error.message}
-	Action : rediriger en page d'accueil`);
+				console.log(`\nEnvoi de ${cheminDemande}. Erreur 500 Internal Server Error. Message : ${error.message}`);
+				retournerMessage(res, 500, `500 - ${error.code}`);
 			}
 			return;
 		}
-		
-		// Envoie le contenu du fichier avec le type MIME correct
-		retournerRessource(res, 200, contentType, content);
+	
+		// Envoyer le contenu du fichier avec le type MIME correct et avec compression éventuelle
+		if(fichierEstACompresser)
+		{
+			compressionChoisie.methodeRessource(content, (err, compressed) => 
+			{
+				let contenuFinal;
+				if(err)
+				{
+					console.log(`\nEnvoi de ${cheminDemande}. Erreur de compression ${compressionChoisie.nom}. Renvoi de la ressource non compressée. ${err}`);
+					contenuFinal = content;
+				}
+				else
+				{
+					console.log(`\nEnvoi de ${cheminDemande}. Compression ${compressionChoisie.nom}`);
+					res.setHeader("Content-Encoding", compressionChoisie.nom);
+					contenuFinal = compressed;
+				}
+				retournerRessource(res, 200, contentTypeCharset, contenuFinal);
+			});
+		}
+		else
+		{
+			console.log(`\nEnvoi de ${cheminDemande} sans compression`);
+			retournerRessource(res, 200, contentTypeCharset, content);
+		}
 	});
 });
 
 // Démarrer le serveur sur le port 
 server.listen(PORT, () => 
 {
-	console.log(`Serveur démarré sur ${SERVEUR}:${PORT}`);
+	const message = `Serveur démarré sur ${SERVEUR}:${PORT}`;
+	const messageLongueur = message.length;
+	console.log('-'.repeat(messageLongueur));
+	console.log(message);
+	console.log('-'.repeat(messageLongueur));
 });
 
 
@@ -221,13 +300,12 @@ server.listen(PORT, () =>
 
 let tracerInformations = (req) =>
 {
-	console.log('-'.repeat(25));
+	console.log('');
 	
 	// console.log('Headers :', JSON.stringify(req.headers, null, 2));
 	// console.log('\tHost : ' + req.headers.host); //  Host : localhost:3000
-	console.log(`Requête
-	Méthode : ${req.method}
-	URL : ${req.url}
+	console.log(`Requête entrante
+	Méthode et URL : ${req.method} ${req.url}
 	Adresse IP : ${req.socket.remoteAddress}
 	Adresse IP si Proxy : ${req.headers['x-forwarded-for']}
 	User agent: ${req.headers['user-agent']}
@@ -246,13 +324,8 @@ let redirigerEnAccueil = (res) =>
 	res.end();
 }
 
-let retournerRessource = (res, statusCode, typeMime, message) =>
+let retournerContentType = (typeMime) =>
 {
-	// v.1
-	// res.writeHead(statusCode, { 'Content-Type': typeMime });
-	// res.end(message, 'utf-8');
-	// v.2
-	res.statusCode = statusCode;
 	let charset = '';
 	switch (typeMime) 
 	{
@@ -263,10 +336,36 @@ let retournerRessource = (res, statusCode, typeMime, message) =>
 		case TYPES_MIME['.ico']:
 			break;
 		default:
-			charset = '; charset=utf-8';
+			charset = CONTENTTYPE_CHARSET;
 			break;
 	}
-	res.setHeader('Content-Type', `${typeMime}${charset}`);	
+	return `${typeMime}${charset}`;	
+}
+
+/*let retournerRessourcePersonnalisee = (res, statusCode, typeMime, message) =>
+{
+	// v.1
+	// res.writeHead(statusCode, { 'Content-Type': typeMime });
+	// res.end(message, 'utf-8');
+	// v.2
+	res.statusCode = statusCode;
+	let contentType = retournerContentType(typeMime);
+	res.setHeader('Content-Type', contentType);
+	res.end(message);
+}*/
+// Exemple d'utilisation : retournerRessourcePersonnalisee(res, 404, TYPES_MIME['.txt'], 'Fichier introuvable');
+
+let retournerMessage = (res, statusCode, message) =>
+{
+	res.statusCode = statusCode;
+	res.setHeader('Content-Type',  TYPES_MIME['.txt'] + CONTENTTYPE_CHARSET);
+	res.end(message);		
+}
+
+let retournerRessource = (res, statusCode, contentTypeCharset, message) =>
+{
+	res.statusCode = statusCode;
+	res.setHeader('Content-Type', contentTypeCharset);
 	res.end(message);
 }
 
@@ -300,3 +399,4 @@ let retournerRessource = (res, statusCode, typeMime, message) =>
 {
 	return req.connection.encrypted ? 'https' : 'http';
 }*/
+

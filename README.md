@@ -43,6 +43,8 @@ Les fichiers sont à renvoyer côté client avec un type MIME adéquat.
 
 Le *charset* des fichiers non multimedia (vidéo, image...) doit être `utf-8`.
 
+Les fichiers transmis et qui ne sont pas déjà compressés doivent être compressés (brotli, gzip, deflate).
+
 Toutes les requêtes qui ne pointent pas sur un fichier doivent retourner le fichier `html/index.html`. Cette page contient la structure minimale du site.
 
 ## HTML et CSS
