@@ -35,6 +35,10 @@ Pourquoi ?
 {
 	background-color: green;
 }
+.yerk
+{
+	border:3px solid yellow;
+}
 
 /* Test avec ::part() */
 page-accueil::part(youpi)

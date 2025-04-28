@@ -131,11 +131,11 @@ class Rubrique extends HTMLElement
 		// V.3c (factorisation) 
 		// Cibler une feuille de style par dataset 'id', en récupérer UNE ou PLUSIEURS règles concernant un sélecteur (.boutonPourri), éventuellement en modifier une seule (pas le :hover), et tout cela pour ce composant seulement
 		// const newSheet = main.obtenirRegleCSS('.boutonPourri');	// UNE seule règle
-		const newSheet = main.obtenirToutesReglesCSS('.boutonPourri'); // PLUSIEURS règles, version avec string 
-		// const newSheet = main.obtenirToutesReglesCSSDeListe(['.boutonPourri', '.boutonPourri:hover']); // PLUSIEURS règles, version avec array
+		// const newSheet = main.obtenirToutesReglesCSS('.boutonPourri'); // PLUSIEURS règles, version avec string 
+		const newSheet = main.obtenirToutesReglesCSSDeListe(['.boutonPourri', '.yerk']); // PLUSIEURS règles, version avec array
 		// On peut modifier les règles CSS de cette nouvelle feuille de ce composant.
 		// Ici, je ne veux modifier que .boutonPourri (et pas le :hover)
-		const regleBoutonPourriModifie = Array.from(newSheet.cssRules).find(regle => regle.selectorText === '.boutonPourri');		
+		const regleBoutonPourriModifie = Array.from(newSheet.cssRules).find(regle => regle.selectorText === '.boutonPourri');
 		regleBoutonPourriModifie.style.borderRadius = '0.5rem';
 		regleBoutonPourriModifie.style.padding = '0.5rem';
 		// Ajouter au shadowDOM. La propriété attend un tableau de CSSStyleSheet.
@@ -148,6 +148,10 @@ class Rubrique extends HTMLElement
 		// shadow.adoptedStyleSheets = [...shadow.adoptedStyleSheets, newSheet];
 		// Noter qu'on peut faire la même chose avec le document HTML lui-même, en particulier si on n'utilise pas de shadowDOM :
 		// document.adoptedStyleSheets = [...document.adoptedStyleSheets, newSheet];
+		// On a récupéré .yerk ? Voir ça 
+		const regleYerk = Array.from(newSheet.cssRules).find(regle => regle.selectorText === '.yerk');
+		console.log(regleYerk);
+		
 		
 		// Et on veut un truc !
 		const truc = document.createElement(MODS.truc.nom);
