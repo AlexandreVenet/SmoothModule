@@ -84,7 +84,7 @@ class Rubrique extends HTMLElement
 		shadow.adoptedStyleSheets = adoptedStyles;*/
 		// Problème : on itère sur TOUTES les feuilles de styles alors qu'on ne veut explorer qu'une seule
 		
-		// V.3 : cibler une feuille de style par un dataset 'id'
+		// V.3a : cibler une feuille de style par un dataset 'id'
 		// D'abord, en HTML ajouter un attribut aux tags <link> pour pouvoir les cibler individuellement.
 		// Puis, ce qui suit.
 		/*const mesStyles = Array.from(document.styleSheets).find(sheet => sheet.ownerNode.getAttribute('data-id') === 'MesStyles');
@@ -104,16 +104,12 @@ class Rubrique extends HTMLElement
 		regleBoutonPourriModifie.style.borderRadius = '0.5rem';
 		regleBoutonPourriModifie.style.padding = '0.5rem';
 		// Ajouter au shadowDOM. La propriété attend un tableau de CSSStyleSheet.
-		// shadow.adoptedStyleSheets = [newSheet];
-		// Ou bien :
-		const adoptedStyles = [];
-		adoptedStyles.push(newSheet);
-		shadow.adoptedStyleSheets = adoptedStyles;*/
-		// Ok mais là on n'a pris qu'une seule règle. Or, on veut aussi :hover.
+		// shadow.adoptedStyleSheets = [newSheet];*/
+		// Ok mais là on n'a pris qu'une seule règle. Le :hover de .boutonPourri est exclu. Or, on veut aussi cet :hover.
 		
 		// V.3b : cibler une feuille de style par dataset 'id', en récupérer les règles concernant un sélecteur (.boutonPourri), en modifier une seule (pas le :hover) pour ce composant seulement
 		// D'abord, en HTML ajouter un attribut aux tags <link> pour pouvoir les cibler individuellement.
-		const mesStyles = Array.from(document.styleSheets).find(sheet => sheet.ownerNode.getAttribute('data-id') === 'MesStyles');
+		/*const mesStyles = Array.from(document.styleSheets).find(sheet => sheet.ownerNode.getAttribute('data-id') === 'MesStyles');
 		// Ok, ça, ça doit être conservé qqe part dans Main pour que chaque composant puisse y chercher ce qui lui est nécessaire.
 		// Maintenant, récupérons TOUTES les règles CSS nommées '.boutonPourri'
 		const reglesBoutonPourri = Array.from(mesStyles.cssRules).filter(regle => regle.cssText.includes('.boutonPourri'));
@@ -123,7 +119,20 @@ class Rubrique extends HTMLElement
 		const css = cssTexts.join(' '); 
 		// Avec cela, créer la nouvelle feuille de style
 		const newSheet = new CSSStyleSheet();
-		newSheet.replaceSync(css);
+		newSheet.replaceSync(css);	
+		// On peut modifier les règles CSS de cette nouvelle feuille de ce composant.
+		// Ici, je ne veux modifier que .boutonPourri (et pas le :hover)
+		const regleBoutonPourriModifie = Array.from(newSheet.cssRules).find(regle => regle.selectorText === '.boutonPourri');		
+		regleBoutonPourriModifie.style.borderRadius = '0.5rem';
+		regleBoutonPourriModifie.style.padding = '0.5rem';
+		// Ajouter au shadowDOM. La propriété attend un tableau de CSSStyleSheet.
+		shadow.adoptedStyleSheets = [newSheet];*/
+				
+		// V.3c (factorisation) 
+		// Cibler une feuille de style par dataset 'id', en récupérer UNE ou PLUSIEURS règles concernant un sélecteur (.boutonPourri), éventuellement en modifier une seule (pas le :hover), et tout cela pour ce composant seulement
+		// const newSheet = main.obtenirRegleCSS('.boutonPourri');	// UNE seule règle
+		const newSheet = main.obtenirToutesReglesCSS('.boutonPourri'); // PLUSIEURS règles, version avec string 
+		// const newSheet = main.obtenirToutesReglesCSSDeListe(['.boutonPourri', '.boutonPourri:hover']); // PLUSIEURS règles, version avec array
 		// On peut modifier les règles CSS de cette nouvelle feuille de ce composant.
 		// Ici, je ne veux modifier que .boutonPourri (et pas le :hover)
 		const regleBoutonPourriModifie = Array.from(newSheet.cssRules).find(regle => regle.selectorText === '.boutonPourri');		

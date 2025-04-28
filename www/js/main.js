@@ -17,6 +17,10 @@ class Main
 		this.cheminFichiersUtilitaires = '/js/utilitaires';
 		
 		this.tracer('Instance générée');
+		
+		this.stylesDataSetCle = 'data-id';
+		this.stylesDataSetValeur = 'MesStyles';
+		this.mesStyles;
 	}
 	
 	attendreMillisecondesAsync = async (temps) => 
@@ -308,6 +312,68 @@ class Main
 	{
 		console.log(`%c[${this.constructor.name}] ${message}`, 'color:Orange', ...donnees);
 	}
+	
+	obtenirToutesReglesCSS = (nomRegle) =>
+	{
+		return this.obtenirCopieStylesCSS(nomRegle, (nomRegle)=>
+		{
+			// Récupérons TOUTES les règles CSS nommées 
+			const regles = Array.from(this.mesStyles.cssRules).filter(regle => regle.cssText.includes(nomRegle));
+			// Extraire le texte CSS de chaque règle
+			const cssTexts = regles.map(rule => rule.cssText); 
+			// Joindre tous ces textes CSS avec l'espace comme séparateur
+			const css = cssTexts.join(' '); 
+			
+			return css;
+		});
+	}
+	
+	obtenirToutesReglesCSSDeListe = (nomsRegle) => // nomsRegle de type array
+	{
+		return this.obtenirCopieStylesCSS(nomsRegle, (nomsRegle)=>
+		{
+			// Récupérons TOUTES les règles CSS nommées 
+			const regles = Array.from(this.mesStyles.cssRules).filter(regle => nomsRegle.some(nom => regle.cssText.includes(nom)));
+			// Extraire le texte CSS de chaque règle
+			const cssTexts = regles.map(rule => rule.cssText); 
+			// Joindre tous ces textes CSS avec l'espace comme séparateur
+			const css = cssTexts.join(' '); 
+			
+			return css;
+		});
+	}
+	
+	obtenirRegleCSS = (nomRegle) =>
+	{
+		return this.obtenirCopieStylesCSS(nomRegle, (nomRegle)=>
+		{
+			// Je ne veux utiliser qu'une seule règle nommée 
+			const regle = Array.from(this.mesStyles.cssRules).find(regle => regle.selectorText === nomRegle);
+			// Extraire le texte CSS 
+			const css = regle.cssText; 
+			
+			return css;
+		});
+	}
+		
+	obtenirCopieStylesCSS = (nomRegle, callback) =>
+	{
+		// En HTML ajouter un attribut aux tags <link> pour pouvoir les cibler individuellement.
+		if(!this.mesStyles)
+		{	
+			this.mesStyles = Array.from(document.styleSheets).find(sheet => sheet.ownerNode.getAttribute(this.stylesDataSetCle) === this.stylesDataSetValeur);
+		}
+		
+		// Obtenir l'extrait CSS : soit toutes règles, soit une seule règle
+		const extraitCSS = callback(nomRegle);				
+		
+		// Créer la nouvelle feuille de style et y incorporer le CSS précédent
+		const newSheet = new CSSStyleSheet();
+		newSheet.replaceSync(extraitCSS);
+		
+		return newSheet;
+	}
+	
 }
 
 let procedure = async () =>
